@@ -11,5 +11,8 @@
   "dependencies": {
     "google-auth-library": "^0.9.8",
     "googleapis": "^12.4.0"
+  },
+  "repository": {
+    https://github.com/JiyanBlack/rawdrive
   }
 }
