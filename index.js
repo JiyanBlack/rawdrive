@@ -19,7 +19,10 @@ class UserAccount()
 
 */
 
+let decache = require('decache');
 let User = require('./app/User.js');
 
 let user = new User(1);
-user.initial();
+user.init();
+
+decache('./app/User.js');
