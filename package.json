@@ -1,0 +1,15 @@
+{
+  "name": "godrive.js",
+  "version": "0.0.1",
+  "description": "A flexible and easy to use google drive app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "JiYan",
+  "license": "MIT",
+  "dependencies": {
+    "google-auth-library": "^0.9.8",
+    "googleapis": "^12.4.0"
+  }
+}
