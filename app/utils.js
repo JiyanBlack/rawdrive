@@ -5,7 +5,15 @@ const path = require('path');
 const utils = {
 
   "readConfig": function () {
-    return JSON.parse(fs.readFileSync('./config/config.json'));
+    try {
+      return JSON.parse(fs.readFileSync('./config/config.json'));
+    } catch (e) {
+      if (e.code == "ENOENT") {
+        this.saveConfig({});
+      } else {
+        throw e;
+      }
+    }
   },
 
   "question": function (prompt) {
@@ -19,6 +27,20 @@ const utils = {
   "saveUser": function (user) {
     fs.writeFileSync('./users/json/' + user.ID + '.json', JSON.stringify(user));
   },
+
+  "readFolder": function (path) {
+    try {
+      return fs.readdirSync(path);
+    } catch (e) {
+      if (e.code == "ENOENT") {
+        fs.mkdirSync(path);
+        return [];
+      } else {
+        throw e;
+      }
+    }
+  },
+
 
 }
 

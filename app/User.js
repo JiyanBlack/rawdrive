@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('fs');
-const readline = require('readline');
 const google = require('googleapis');
 const googleAuth = require('google-auth-library');
 const utils = require('./utils');
@@ -10,34 +9,73 @@ const path = require('path');
 class User {
   constructor(ID) {
     this.ID = ID;
-    this.TOKEN_DIR = "./users/tokens/";
+    this.name = null;
+    this.TOKEN_DIR = path.resolve("./users/tokens/");
     this.SCOPES = ['https://www.googleapis.com/auth/drive'];
     this.file_dir = null;
     this.enable_sync = true;
-    this.TOKEN_PATH = this.TOKEN_DIR + this.ID + ".json";
+    this.JSON_PATH = path.resolve("./users/json/", this.id + ".json");
+    this.TOKEN_PATH = path.resolve(this.TOKEN_DIR, this.ID + ".json");
   }
 
   //initialize authentication and save file path
   init() {
-    console.log('Initializing account...');
-    fs.readFile('./config/client_secret.json', (err, content) => {
-      if (err) {
-        console.log('Error loading client secret file: ' + err);
-        return;
+    let that = this;
+    let secret = this._readSecret();
+    // Authorize a client with the loaded credentials, then call the Drive API.
+    this._authorize(secret, function (auth) {
+      console.log("Authentication succeed  ~^_^~");
+      let config = that._readConfig();
+      if (!that.file_dir) {
+        that.file_dir = path.resolve(config.path, that.ID.toString());
+        utils.readFolder(that.file_dir);
       }
-      // Authorize a client with the loaded credentials, then call the Drive API.
-      this._authorize(JSON.parse(content), function () {
-        console.log("Authentication succeed  ~^_^~");
-      });
+      utils.saveUser(that);
+      config.userNumber += 1;
+      utils.saveConfig(config);
     });
-    if (!this.file_dir) {
-      this.file_dir = path.resolve(utils.readConfig().path,'/'+this.ID.toString());
-    }
+
   }
 
   //sync
   sync() {
+    let auth = _readToken();
+    let service = google.drive('v3');
+    service.files.list({
+      auth: auth,
+      pageSize: 10,
+      fields: "nextPageToken, files(id, name)"
+    }, function (err, response) {
+      if (err) {
+        console.log('The API returned an error: ' + err);
+        return;
+      }
+      let files = response.files;
+      if (files.length == 0) {
+        console.log('No files found.');
+      } else {
+        console.log('Files:');
+        for (let i = 0; i < files.length; i++) {
+          let file = files[i];
+          console.log('%s (%s)', file.name, file.id);
+        }
+      }
+    });
+  }
 
+  //read client_secret.json and return as js object
+  _readSecret() {
+    try {
+      let secret = fs.readFileSync('./config/client_secret.json');
+      return JSON.parse(secret);
+    } catch (e) {
+      console.log("Read client_secret error: ", e);
+    }
+  }
+
+  //read config
+  _readConfig() {
+    return JSON.parse(fs.readFileSync('./config/config.json'));
   }
 
   //create an OAuth2 client, then execute the callback
@@ -68,21 +106,18 @@ class User {
       scope: this.SCOPES
     });
     console.log('Authorize this app by visiting this url:', '\n' + authUrl);
-    let rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-    rl.question('Enter the code from that page here: ', function (code) {
-      rl.close();
-      oauth2Client.getToken(code, function (err, token) {
-        if (err) {
-          console.log('Error while trying to retrieve access token', err);
-          return;
-        }
-        oauth2Client.credentials = token;
-        that._storeToken(token);
-        callback(oauth2Client);
-      });
+    let code = utils.question('Enter the code from that page here: ');
+    oauth2Client.getToken(code, function (err, token) {
+      if (err) {
+        let config = that._readConfig();
+        config.userNumber -= 1;
+        utils.saveConfig(config);
+        console.log('Error while trying to retrieve access token', err);
+        return;
+      }
+      oauth2Client.credentials = token;
+      that._storeToken(token);
+      callback(oauth2Client);
     });
   }
 
@@ -98,6 +133,11 @@ class User {
     }
     fs.writeFile(this.TOKEN_PATH, JSON.stringify(token));
     console.log('Token stored to ' + this.TOKEN_PATH);
+  }
+
+  //read the token
+  _readToken() {
+    return JSON.parse(fs.readFileSync(this.TOKEN_PATH));
   }
 }
 module.exports = User;

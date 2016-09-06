@@ -29,7 +29,6 @@ const path = require('path');
 function main() {
   initFolder();
   createUser();
-  utils.saveConfig(config);
 }
 main();
 
@@ -40,17 +39,17 @@ function initFolder() {
       config.path = path.resolve(answer);
     } else {
       config.path = path.resolve("../googleDrive");
-      if (!fs.statSync(config.path).isDirectory()) fs.mkdirSync(config.path);
+      utils.saveConfig(config);
+      utils.readFolder(config.path);
     }
   }
 }
 
 function createUser() {
   if (!config.userNumber) config.userNumber = 0;
-  let user = new User(config.userNumber+1);
+  utils.saveConfig(config);
+  let user = new User(config.userNumber + 1);
   user.init();
-  config.userNumber += 1;
-  utils.saveUser(user);
 }
 
 
