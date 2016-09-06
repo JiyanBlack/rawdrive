@@ -1,42 +1,26 @@
 'use strict';
-/*
-command:
-list -- all accounts
-global variable:
-    SAVE_DIR=
-    account_number
-    TOKEN_PATH
-save dir:
-    /save_dir/accountName1
-    /save_dir/accountName2
 
-class UserAccount()
-    authentication_path=
-    file_dir=
-    authorize
-    getNewToken
-    storeToken
-
-*/
-let fs = require('fs');
-let readline = require('readline');
-let google = require('googleapis');
-let googleAuth = require('google-auth-library');
+const fs = require('fs');
+const readline = require('readline');
+const google = require('googleapis');
+const googleAuth = require('google-auth-library');
+const utils = require('./utils');
+const path = require('path');
 
 class User {
   constructor(ID) {
     this.ID = ID;
-    this.TOKEN_DIR = "./tokens";
+    this.TOKEN_DIR = "./users/tokens/";
     this.SCOPES = ['https://www.googleapis.com/auth/drive'];
     this.file_dir = null;
     this.enable_sync = true;
-    this.TOKEN_PATH = "./tokens/" + this.ID + ".json";
+    this.TOKEN_PATH = this.TOKEN_DIR + this.ID + ".json";
   }
 
   //initialize authentication and save file path
   init() {
     console.log('Initializing account...');
-    fs.readFile('./app/client_secret.json', (err, content) => {
+    fs.readFile('./config/client_secret.json', (err, content) => {
       if (err) {
         console.log('Error loading client secret file: ' + err);
         return;
@@ -46,6 +30,14 @@ class User {
         console.log("Authentication succeed  ~^_^~");
       });
     });
+    if (!this.file_dir) {
+      this.file_dir = path.resolve(utils.readConfig().path,'/'+this.ID.toString());
+    }
+  }
+
+  //sync
+  sync() {
+
   }
 
   //create an OAuth2 client, then execute the callback

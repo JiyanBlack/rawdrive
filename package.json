@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "google-auth-library": "^0.9.8",
-    "googleapis": "^12.4.0"
+    "googleapis": "^12.4.0",
+    "readline-sync": "^1.4.4"
   },
   "devDependencies": {
     "decache": "^4.1.0"
