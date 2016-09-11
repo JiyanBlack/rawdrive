@@ -9,13 +9,26 @@ const path = require('path');
 class User {
   constructor(ID) {
     this.ID = ID;
-    this.name = null;
+    this.details = null;
+    //    details= {
+    //   "kind": "drive#user",
+    //   "displayName": "YAN JI",
+    //   "photoLink": "https://lh4.goog... user icon",
+    //   "me": true,
+    //   "permissionId": "08608203340358885075",
+    //   "emailAddress": "rglsm7655558@gmail.com"
+    //  }
+    this.token = null;
+    this.lastModifiedTime = null;
+    this.SCOPES = [
+      "https://www.googleapis.com/auth/drive",
+    ];
     this.TOKEN_DIR = path.resolve("./users/tokens/");
-    this.SCOPES = ['https://www.googleapis.com/auth/drive'];
     this.file_dir = null;
     this.enable_sync = true;
-    this.JSON_PATH = path.resolve("./users/json/", this.id + ".json");
+    this.JSON_PATH = path.resolve("./users/json/", this.ID + ".json");
     this.TOKEN_PATH = path.resolve(this.TOKEN_DIR, this.ID + ".json");
+
   }
 
   //initialize authentication and save file path
@@ -23,44 +36,62 @@ class User {
     let that = this;
     let secret = this._readSecret();
     // Authorize a client with the loaded credentials, then call the Drive API.
-    this._authorize(secret, function (auth) {
-      console.log("Authentication succeed  ~^_^~");
-      let config = that._readConfig();
-      if (!that.file_dir) {
-        that.file_dir = path.resolve(config.path, that.ID.toString());
-        utils.readFolder(that.file_dir);
-      }
-      utils.saveUser(that);
-      config.userNumber += 1;
-      utils.saveConfig(config);
-    });
+    this._authorize(secret, getDetailsAndCreateFolder);
 
+    function getDetailsAndCreateFolder(auth) {
+      if (!that.email) {
+        let service = google.drive('v3');
+        service.about.get({
+          auth: auth,
+          fields: 'user'
+        }, function (err, response) {
+          if (err) {
+            console.log('Get user email returned an error: ' + err);
+            return;
+          }
+          that.details = response.user;
+          if (!that.file_dir) {
+            let config = utils.readConfig();
+            that.file_dir = path.resolve(config.path, that.details.emailAddress.toString());
+            utils.readFolder(that.file_dir);
+          }
+          if (that._checkExistence()) {
+            return console.log("User already exists!");
+          } else {
+            utils.saveUser(that);
+            console.log("Succeessfully load user: " + that.details.emailAddress + ".");
+          }
+          that.sync();
+        });
+      }
+    }
   }
 
   //sync
   sync() {
-    let auth = _readToken();
-    let service = google.drive('v3');
-    service.files.list({
-      auth: auth,
-      pageSize: 10,
-      fields: "nextPageToken, files(id, name)"
-    }, function (err, response) {
-      if (err) {
-        console.log('The API returned an error: ' + err);
-        return;
-      }
-      let files = response.files;
-      if (files.length == 0) {
-        console.log('No files found.');
-      } else {
-        console.log('Files:');
-        for (let i = 0; i < files.length; i++) {
-          let file = files[i];
-          console.log('%s (%s)', file.name, file.id);
+    this._authorize(this._readSecret(), sync_callback);
+
+    function sync_callback(auth) {
+      let service = google.drive('v3');
+      service.files.list({
+        pageSize: "1000",
+        orderBy: "modifiedTime desc,createdTime desc"
+      }, function (err, response) {
+        if (err) {
+          return console.log('Get user file list error: ' + err);
         }
-      }
-    });
+        console.log(response);
+      })
+    }
+  }
+
+  //check if this email already exists
+  _checkExistence() {
+    let emailArray = utils.getUserEmails();
+    for (let i in emailArray) {
+      if (emailArray[i] == this.details.emailAddress) return true;
+    }
+    return false;
   }
 
   //read client_secret.json and return as js object
@@ -73,11 +104,6 @@ class User {
     }
   }
 
-  //read config
-  _readConfig() {
-    return JSON.parse(fs.readFileSync('./config/config.json'));
-  }
-
   //create an OAuth2 client, then execute the callback
   _authorize(credentials, callback) {
     console.log('Require account authentication...');
@@ -87,14 +113,12 @@ class User {
     let auth = new googleAuth();
     let oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
     // Check if we have previously stored a token.
-    fs.readFile(this.TOKEN_PATH, (err, token) => {
-      if (err) {
-        this._getNewToken(oauth2Client, callback);
-      } else {
-        oauth2Client.credentials = JSON.parse(token);
-        callback(oauth2Client);
-      }
-    });
+    if (!this.token) {
+      this._getNewToken(oauth2Client, callback);
+    } else {
+      oauth2Client.credentials = this.token;
+      callback(oauth2Client);
+    }
   }
 
   // get new token
@@ -109,35 +133,14 @@ class User {
     let code = utils.question('Enter the code from that page here: ');
     oauth2Client.getToken(code, function (err, token) {
       if (err) {
-        let config = that._readConfig();
-        config.userNumber -= 1;
-        utils.saveConfig(config);
         console.log('Error while trying to retrieve access token', err);
         return;
       }
       oauth2Client.credentials = token;
-      that._storeToken(token);
+      that.token = token;
       callback(oauth2Client);
     });
   }
 
-  //store the token
-  _storeToken(token) {
-    console.log('Storing new token...');
-    try {
-      fs.mkdirSync(this.TOKEN_DIR);
-    } catch (err) {
-      if (err.code != 'EEXIST') {
-        throw err;
-      }
-    }
-    fs.writeFile(this.TOKEN_PATH, JSON.stringify(token));
-    console.log('Token stored to ' + this.TOKEN_PATH);
-  }
-
-  //read the token
-  _readToken() {
-    return JSON.parse(fs.readFileSync(this.TOKEN_PATH));
-  }
 }
 module.exports = User;

@@ -23,8 +23,9 @@ const decache = require('decache');
 const User = require('./User.js');
 const fs = require('fs');
 const utils = require('./utils.js');
-const config = utils.readConfig();
 const path = require('path');
+
+let config = utils.readConfig();
 
 function main() {
   initFolder();
@@ -33,6 +34,7 @@ function main() {
 main();
 
 function initFolder() {
+  if (!config) config = {};
   if (!config.path) {
     let answer = utils.question("Set the google drive folder path, default is App/googleDrive folder:")
     if (answer.length > 0) {
@@ -46,9 +48,8 @@ function initFolder() {
 }
 
 function createUser() {
-  if (!config.userNumber) config.userNumber = 0;
-  utils.saveConfig(config);
-  let user = new User(config.userNumber + 1);
+  userNumber = utils.countUsers();
+  let user = new User(userNumber + 1);
   user.init();
 }
 

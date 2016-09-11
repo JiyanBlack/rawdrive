@@ -41,6 +41,22 @@ const utils = {
     }
   },
 
+  "countUsers": function () {
+    return fs.readdirSync('./users/json/').length;
+  },
+
+  "getUserEmails": function () {
+    const usersJsonPath = './users/json/'
+    let emailArray = [];
+    let filesArray = fs.readdirSync(usersJsonPath);
+
+    for (let i in filesArray) {
+      let path = usersJsonPath + filesArray[i];
+      let userJson = JSON.parse(fs.readFileSync(path));
+      emailArray.push(userJson.details.emailAddress);
+    }
+    return emailArray;
+  }
 
 }
 
