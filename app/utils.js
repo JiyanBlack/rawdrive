@@ -4,7 +4,7 @@ const path = require('path');
 
 const utils = {
 
-  "readConfig": function () {
+  "readConfig": function() {
     try {
       return JSON.parse(fs.readFileSync('./config/config.json'));
     } catch (e) {
@@ -16,19 +16,19 @@ const utils = {
     }
   },
 
-  "question": function (prompt) {
+  "question": function(prompt) {
     return readlineSync.question(prompt + "\n");
   },
 
-  "saveConfig": function (config) {
+  "saveConfig": function(config) {
     fs.writeFileSync('./config/config.json', JSON.stringify(config));
   },
 
-  "saveUser": function (user) {
-    fs.writeFileSync('./users/json/' + user.ID + '.json', JSON.stringify(user));
+  "saveUser": function(user) {
+    fs.writeFile('./users/json/' + user.ID + '.json', JSON.stringify(user));
   },
 
-  "readFolder": function (path) {
+  "readFolder": function(path) {
     try {
       return fs.readdirSync(path);
     } catch (e) {
@@ -41,21 +41,21 @@ const utils = {
     }
   },
 
-  "countUsers": function () {
+  "countUsers": function() {
     return fs.readdirSync('./users/json/').length;
   },
 
-  "getUserEmails": function () {
+  "checkEmail": function(targetEmail) {
     const usersJsonPath = './users/json/'
-    let emailArray = [];
     let filesArray = fs.readdirSync(usersJsonPath);
-
+    if (filesArray.length == 0) return null;
     for (let i in filesArray) {
       let path = usersJsonPath + filesArray[i];
       let userJson = JSON.parse(fs.readFileSync(path));
-      emailArray.push(userJson.details.emailAddress);
+      if (userJson.details.emailAddress == targetEmail)
+        return userJson;
     }
-    return emailArray;
+    return null;
   }
 
 }

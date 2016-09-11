@@ -27,11 +27,9 @@ const path = require('path');
 
 let config = utils.readConfig();
 
-function main() {
-  initFolder();
-  createUser();
-}
-main();
+initFolder();
+createUser();
+
 
 function initFolder() {
   if (!config) config = {};

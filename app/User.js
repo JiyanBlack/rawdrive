@@ -5,6 +5,7 @@ const google = require('googleapis');
 const googleAuth = require('google-auth-library');
 const utils = require('./utils');
 const path = require('path');
+const reviver = require('./reviver');
 
 class User {
   constructor(ID) {
@@ -23,19 +24,14 @@ class User {
     this.SCOPES = [
       "https://www.googleapis.com/auth/drive",
     ];
-    this.TOKEN_DIR = path.resolve("./users/tokens/");
     this.file_dir = null;
     this.enable_sync = true;
-    this.JSON_PATH = path.resolve("./users/json/", this.ID + ".json");
-    this.TOKEN_PATH = path.resolve(this.TOKEN_DIR, this.ID + ".json");
-
   }
 
-  //initialize authentication and save file path
+  //initialize user information
   init() {
     let that = this;
     let secret = this._readSecret();
-    // Authorize a client with the loaded credentials, then call the Drive API.
     this._authorize(secret, getDetailsAndCreateFolder);
 
     function getDetailsAndCreateFolder(auth) {
@@ -44,7 +40,7 @@ class User {
         service.about.get({
           auth: auth,
           fields: 'user'
-        }, function (err, response) {
+        }, function(err, response) {
           if (err) {
             console.log('Get user email returned an error: ' + err);
             return;
@@ -55,13 +51,18 @@ class User {
             that.file_dir = path.resolve(config.path, that.details.emailAddress.toString());
             utils.readFolder(that.file_dir);
           }
-          if (that._checkExistence()) {
-            return console.log("User already exists!");
+          let existingUser = utils.checkEmail(that.details.emailAddress);
+          if (existingUser !== null) {
+            console.log("User already exists, user information will be updated.");
+            that.ID = existingUser.ID;
+            that.JSON_PATH = existingUser.JSON_PATH;
+            that._saveUser();
+            utils.saveUser(that);
           } else {
+            that._saveUser();
             utils.saveUser(that);
             console.log("Succeessfully load user: " + that.details.emailAddress + ".");
           }
-          that.sync();
         });
       }
     }
@@ -76,7 +77,7 @@ class User {
       service.files.list({
         pageSize: "1000",
         orderBy: "modifiedTime desc,createdTime desc"
-      }, function (err, response) {
+      }, function(err, response) {
         if (err) {
           return console.log('Get user file list error: ' + err);
         }
@@ -85,14 +86,20 @@ class User {
     }
   }
 
-  //check if this email already exists
-  _checkExistence() {
-    let emailArray = utils.getUserEmails();
-    for (let i in emailArray) {
-      if (emailArray[i] == this.details.emailAddress) return true;
-    }
-    return false;
+  //save the user as revive object;
+  _saveUser() {
+    let userSaver = new reviver.ClassReviver(User, this);
+    userSaver.addModules({
+      fs: 'fs',
+      google: 'googleapis',
+      googleAuth: 'google-auth-library',
+      utils: path.resolve('./utils.js'),
+      path: 'path',
+      reviver:path.resolve('./reviver.js')
+    });
+    userSaver.saveClassSync('./users/revivers/' + this.ID.toString() + '.js');
   }
+
 
   //read client_secret.json and return as js object
   _readSecret() {
@@ -113,7 +120,7 @@ class User {
     let auth = new googleAuth();
     let oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
     // Check if we have previously stored a token.
-    if (!this.token) {
+    if (this.token === null) {
       this._getNewToken(oauth2Client, callback);
     } else {
       oauth2Client.credentials = this.token;
@@ -131,7 +138,7 @@ class User {
     });
     console.log('Authorize this app by visiting this url:', '\n' + authUrl);
     let code = utils.question('Enter the code from that page here: ');
-    oauth2Client.getToken(code, function (err, token) {
+    oauth2Client.getToken(code, function(err, token) {
       if (err) {
         console.log('Error while trying to retrieve access token', err);
         return;
