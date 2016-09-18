@@ -24,7 +24,7 @@ const utils = {
     fs.writeFileSync('./config/config.json', JSON.stringify(config));
   },
 
-  "saveUser": function(user) {
+  "saveUserJson": function(user) {
     fs.writeFile('./users/json/' + user.ID + '.json', JSON.stringify(user));
   },
 

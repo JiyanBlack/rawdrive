@@ -1,19 +1,37 @@
 {
-  "name": "godrive.js",
-  "version": "0.0.1",
-  "description": "A flexible and easy to use google drive app.",
+  "name": "godrive",
+  "version": "0.1.0",
+  "description": "A flexible and easy to use google drive app that supports mutiple users.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "godrive":"./index.js"
   },
-  "author": "JiYan",
-  "license": "MIT",
   "dependencies": {
+    "class-reviver": "^0.2.1",
     "google-auth-library": "^0.9.8",
-    "googleapis": "^12.4.0",
+    "googleapis": "^13.0.0",
     "readline-sync": "^1.4.4"
   },
   "devDependencies": {
     "decache": "^4.1.0"
-  }
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JiyanBlack/rawdrive.git"
+  },
+  "keywords": [
+    "google",
+    "drive",
+    "google",
+    "drive"
+  ],
+  "author": "JiYan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JiyanBlack/rawdrive/issues"
+  },
+  "homepage": "https://github.com/JiyanBlack/rawdrive#readme"
 }

@@ -5,7 +5,7 @@ const google = require('googleapis');
 const googleAuth = require('google-auth-library');
 const utils = require('./utils');
 const path = require('path');
-const reviver = require('./reviver');
+const reviver = require('class-reviver');
 
 class User {
   constructor(ID) {
@@ -42,8 +42,7 @@ class User {
           fields: 'user'
         }, function(err, response) {
           if (err) {
-            console.log('Get user email returned an error: ' + err);
-            return;
+            return console.log('Get user email returned an error: ' + err);
           }
           that.details = response.user;
           if (!that.file_dir) {
@@ -52,17 +51,13 @@ class User {
             utils.readFolder(that.file_dir);
           }
           let existingUser = utils.checkEmail(that.details.emailAddress);
-          if (existingUser !== null) {
+          if (existingUser !== null && existingUser.ID != that.ID) {
             console.log("User already exists, user information will be updated.");
             that.ID = existingUser.ID;
-            that.JSON_PATH = existingUser.JSON_PATH;
-            that._saveUser();
-            utils.saveUser(that);
           } else {
-            that._saveUser();
-            utils.saveUser(that);
             console.log("Succeessfully load user: " + that.details.emailAddress + ".");
           }
+          utils.saveUserJson(that);
         });
       }
     }
@@ -75,6 +70,7 @@ class User {
     function sync_callback(auth) {
       let service = google.drive('v3');
       service.files.list({
+        auth: auth,
         pageSize: "1000",
         orderBy: "modifiedTime desc,createdTime desc"
       }, function(err, response) {
@@ -84,20 +80,6 @@ class User {
         console.log(response);
       })
     }
-  }
-
-  //save the user as revive object;
-  _saveUser() {
-    let userSaver = new reviver.ClassReviver(User, this);
-    userSaver.addModules({
-      fs: 'fs',
-      google: 'googleapis',
-      googleAuth: 'google-auth-library',
-      utils: path.resolve('./utils.js'),
-      path: 'path',
-      reviver:path.resolve('./reviver.js')
-    });
-    userSaver.saveClassSync('./users/revivers/' + this.ID.toString() + '.js');
   }
 
 
@@ -113,14 +95,13 @@ class User {
 
   //create an OAuth2 client, then execute the callback
   _authorize(credentials, callback) {
-    console.log('Require account authentication...');
     let clientSecret = credentials.installed.client_secret;
     let clientId = credentials.installed.client_id;
     let redirectUrl = credentials.installed.redirect_uris[0];
     let auth = new googleAuth();
     let oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
     // Check if we have previously stored a token.
-    if (this.token === null) {
+    if (this.token == null) {
       this._getNewToken(oauth2Client, callback);
     } else {
       oauth2Client.credentials = this.token;
