@@ -75,12 +75,12 @@ class User {
         pageSize: "1000",
         pageToken: PageToken || "",
         q: "trashed=false",
-        fields: "files(createdTime,id,md5Checksum,mimeType,modifiedTime,name,parents,version,webContentLink,trashed),nextPageToken"
+        fields: "files(createdTime,id,md5Checksum,mimeType,modifiedTime,name,parents,version,webContentLink),nextPageToken"
       }, function(err, response) {
         if (err)
           return console.log('Get user file list error: ' + err);
         if (response) {
-          allFiles=allFiles.concat(response.files);
+          allFiles = allFiles.concat(response.files);
           if (response.nextPageToken)
             listFiles(auth, response.nextPageToken);
           else
