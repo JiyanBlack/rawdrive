@@ -55,7 +55,7 @@ class User {
             console.log("User already exists, user information will be updated.");
             that.ID = existingUser.ID;
           } else {
-            console.log("Succeessfully load user: " + that.details.emailAddress + ".");
+            console.log("Succeessfully get user: " + that.details.emailAddress + ".");
           }
           utils.saveUserJson(that);
         });
@@ -64,23 +64,35 @@ class User {
   }
 
   //sync
-  sync() {
-    this._authorize(this._readSecret(), sync_callback);
+  getFileArray(callback) {
+    this._authorize(this._readSecret(), listFiles);
+    let allFiles = [];
 
-    function sync_callback(auth) {
+    function listFiles(auth, PageToken) {
       let service = google.drive('v3');
       service.files.list({
         auth: auth,
         pageSize: "1000",
-        orderBy: "modifiedTime desc,createdTime desc"
+        pageToken: PageToken || "",
+        q: "trashed=false",
+        fields: "files(createdTime,id,md5Checksum,mimeType,modifiedTime,name,parents,version,webContentLink,trashed),nextPageToken"
       }, function(err, response) {
-        if (err) {
+        if (err)
           return console.log('Get user file list error: ' + err);
+        if (response) {
+          allFiles=allFiles.concat(response.files);
+          if (response.nextPageToken)
+            listFiles(auth, response.nextPageToken);
+          else
+            callback(allFiles);
+          return console.log("Get " + allFiles.length + " files.");
+        } else {
+          throw Error("Invalid file-list response.");
         }
-        console.log(response);
-      })
+      });
     }
   }
+
 
 
   //read client_secret.json and return as js object
