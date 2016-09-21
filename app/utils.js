@@ -42,7 +42,7 @@ const utils = {
   },
 
   "countUsers": function() {
-    return fs.readdirSync('./users/json/').length;
+    return this.readFolder('./users/json/').length;
   },
 
   "checkEmail": function(targetEmail) {

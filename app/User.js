@@ -65,17 +65,20 @@ class User {
 
   //sync
   getFileArray(callback) {
+    let that = this;
     this._authorize(this._readSecret(), listFiles);
     let allFiles = [];
 
     function listFiles(auth, PageToken) {
       let service = google.drive('v3');
+      let listFileds = "files(createdTime,id,md5Checksum,mimeType,modifiedTime,name,ownedByMe,parents,spaces,version),nextPageToken";
+
       service.files.list({
         auth: auth,
         pageSize: "1000",
         pageToken: PageToken || "",
         q: "trashed=false",
-        fields: "files(createdTime,id,md5Checksum,mimeType,modifiedTime,name,parents,version,webContentLink),nextPageToken"
+        fields: listFileds
       }, function(err, response) {
         if (err)
           return console.log('Get user file list error: ' + err);
@@ -85,15 +88,13 @@ class User {
             listFiles(auth, response.nextPageToken);
           else
             callback(allFiles);
-          return console.log("Get " + allFiles.length + " files.");
+          return console.log("Get " + allFiles.length + " files for " + that.details.emailAddress);
         } else {
           throw Error("Invalid file-list response.");
         }
       });
     }
   }
-
-
 
   //read client_secret.json and return as js object
   _readSecret() {

@@ -6,7 +6,7 @@ const reviver = require('class-reviver');
 
 function getUsers() {
   let usersArray = [];
-  let jsonArray = fs.readdirSync(usersJsonPath);
+  let jsonArray = fs.readdirSync(usersJsonPath).filter(name => /\d+\.json/.test(name));
   let userReviver = new reviver.ClassReviver(User);
   for (let i in jsonArray) {
     let path = usersJsonPath + jsonArray[i];
