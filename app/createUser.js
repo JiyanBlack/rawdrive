@@ -30,9 +30,18 @@ let config = utils.readConfig();
 initFolder();
 createUser();
 
-
 function initFolder() {
-  if (!config) config = {};
+  const usersJsonPath = './users/json/'
+  try {
+    utils.readFolder(usersJsonPath);
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      utils.readFolder('./users/');
+      utils.readFolder(usersJsonPath);
+    }
+  }
+  if (!config) 
+    config = {};
   if (!config.path) {
     let answer = utils.question("Set the google drive folder path, default is App/googleDrive folder:")
     if (answer.length > 0) {
@@ -50,7 +59,6 @@ function createUser() {
   let user = new User(userNumber + 1);
   user.init();
 }
-
 
 decache('./app/User.js');
 decache('./app/utils.js');

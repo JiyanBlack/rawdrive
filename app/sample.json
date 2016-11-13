@@ -1,0 +1,173 @@
+[
+  {
+    "id": "0B9OH7pgMYWS9VjdFb1cxR3JUa2c",
+    "name": "2333",
+    "mimeType": "application/vnd.google-apps.folder",
+    "parents": [
+      "0B9OH7pgMYWS9SVpXQU1fM25Mamc"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "240",
+    "createdTime": "2016-09-21T12:28:22.113Z",
+    "modifiedTime": "2016-09-21T12:28:22.113Z",
+    "ownedByMe": true
+  },
+  {
+    "id": "0B9OH7pgMYWS9SVpXQU1fM25Mamc",
+    "name": "demonstrations",
+    "mimeType": "application/vnd.google-apps.folder",
+    "parents": [
+      "0ANOH7pgMYWS9Uk9PVA"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "241",
+    "createdTime": "2016-09-21T12:28:13.998Z",
+    "modifiedTime": "2016-09-21T12:28:13.998Z",
+    "ownedByMe": true
+  },
+  {
+    "id": "0B9OH7pgMYWS9WTcybFNVR2UtZEk",
+    "name": "week3_db-sql1 questions.pdf",
+    "mimeType": "application/pdf",
+    "parents": [
+      "0B9OH7pgMYWS9NTVfREVrQlY5aDA"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "221",
+    "createdTime": "2016-09-18T04:37:40.416Z",
+    "modifiedTime": "2016-09-18T04:37:40.416Z",
+    "ownedByMe": true,
+    "md5Checksum": "e01d04bcb1d98dc8fc8bdf56d1ff9755"
+  },
+  {
+    "id": "0B9OH7pgMYWS9WXNyWmNvcTdfOTg",
+    "name": "Week3",
+    "mimeType": "image/x-portable-bitmap",
+    "parents": [
+      "0B9OH7pgMYWS9NTVfREVrQlY5aDA"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "196",
+    "createdTime": "2016-09-18T04:37:39.459Z",
+    "modifiedTime": "2016-09-18T04:37:39.459Z",
+    "ownedByMe": true,
+    "md5Checksum": "a5c45ba1471bbd10ef49b1b9eb8502e5"
+  },
+  {
+    "id": "0B9OH7pgMYWS9WXN0cEwydndWTkk",
+    "name": "week4_db-sql2 questions.pdf",
+    "mimeType": "application/pdf",
+    "parents": [
+      "0B9OH7pgMYWS9NTVfREVrQlY5aDA"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "217",
+    "createdTime": "2016-09-18T04:37:39.459Z",
+    "modifiedTime": "2016-09-18T04:37:39.459Z",
+    "ownedByMe": true,
+    "md5Checksum": "14f6767c9bfcad5c5cedecf55e91c0d1"
+  },
+  {
+    "id": "0B9OH7pgMYWS9RVp3UjUtSXUtdWc",
+    "name": "world.sql",
+    "mimeType": "text/x-sql",
+    "parents": [
+      "0B9OH7pgMYWS9NTVfREVrQlY5aDA"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "198",
+    "createdTime": "2016-09-18T04:37:39.459Z",
+    "modifiedTime": "2016-09-18T04:37:39.459Z",
+    "ownedByMe": true,
+    "md5Checksum": "66e56f635796eb39f50ff7a52bf8f031"
+  },
+  {
+    "id": "0B9OH7pgMYWS9bzVXWnVIS0U5bEk",
+    "name": "Week4",
+    "mimeType": "application/octet-stream",
+    "parents": [
+      "0B9OH7pgMYWS9NTVfREVrQlY5aDA"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "191",
+    "createdTime": "2016-09-18T04:37:38.952Z",
+    "modifiedTime": "2016-09-18T04:37:38.952Z",
+    "ownedByMe": true,
+    "md5Checksum": "d72c02e1c4acd9da36b55d3460d23c4c"
+  },
+  {
+    "id": "0B9OH7pgMYWS9NTVfREVrQlY5aDA",
+    "name": "Lab01",
+    "mimeType": "application/vnd.google-apps.folder",
+    "parents": [
+      "0B9OH7pgMYWS9MnR4MXVlc0FZQ1U"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "228",
+    "createdTime": "2016-09-18T04:37:37.574Z",
+    "modifiedTime": "2016-09-18T04:37:37.574Z",
+    "ownedByMe": true
+  },
+  {
+    "id": "0B9OH7pgMYWS9MnR4MXVlc0FZQ1U",
+    "name": "Database",
+    "mimeType": "application/vnd.google-apps.folder",
+    "parents": [
+      "0B9OH7pgMYWS9cWNEWnZqbno4ME0"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "254",
+    "createdTime": "2016-09-18T04:37:36.585Z",
+    "modifiedTime": "2016-09-18T04:37:36.585Z",
+    "ownedByMe": true
+  },
+  {
+    "id": "0B9OH7pgMYWS9b2FDVDlvbm01Yjg",
+    "name": "15chs_000.pdf",
+    "mimeType": "application/pdf",
+    "parents": [
+      "0B9OH7pgMYWS9cWNEWnZqbno4ME0"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "48",
+    "createdTime": "2016-09-18T04:37:08.702Z",
+    "modifiedTime": "2016-09-18T04:37:08.702Z",
+    "ownedByMe": true,
+    "md5Checksum": "edb9e4e7285118e9d64abfb57709a0d2"
+  },
+  {
+    "id": "0B9OH7pgMYWS9cWNEWnZqbno4ME0",
+    "name": "dev-demo",
+    "mimeType": "application/vnd.google-apps.folder",
+    "parents": [
+      "0ANOH7pgMYWS9Uk9PVA"
+    ],
+    "spaces": [
+      "drive"
+    ],
+    "version": "255",
+    "createdTime": "2016-09-18T04:36:09.862Z",
+    "modifiedTime": "2016-09-18T04:36:09.862Z",
+    "ownedByMe": true
+  }
+]
